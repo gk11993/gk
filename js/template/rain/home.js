@@ -1,0 +1,1 @@
+module.exports = { Raindrop: global.param, talk: "Welecome to home" }
