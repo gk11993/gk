@@ -6,14 +6,14 @@
 
 ## to have
 
-### create
+1. create
 *   install c++ project
 
-### createjs
+2. createjs
 *   install node project 
 
-### gk
+3. gk
 *   Planned for extensions
 
-### pack
++ pack
 *   c++ to exe file for compile
