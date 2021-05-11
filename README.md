@@ -4,11 +4,11 @@
 *	"node.js" v14.16.1 maybe you can anything environment;
 
 ## to have
-create
+1. create
+2. createjs
+3. gk
+4. pack
 *   install c++ project
-createjs
 *   install node project 
-gk
 *   Planned for extensions
-pack
 *   c++ to exe file for compile
