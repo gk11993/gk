@@ -1,9 +1,10 @@
 ### use environment
 *  compiler "gcc version 8.1.0" for c++
 *  "node.js" v14.16.1
-*  maybe you can anything environment;
+*  windows 10
+*  maybe can anything environment;
 
-### to have
+### what does it have?
 *  [create] install c++ project
 *  [createjs] install node project 
 *  [pack] compile c++ to exe file 
