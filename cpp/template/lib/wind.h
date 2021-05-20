@@ -12,7 +12,8 @@ public:
 	~Wind();
 	void injectDll(const string&, int);
 	vector<wstring> eachModule(const int &);
-	int eachProcess(wstring);
+	void eachProcess(wstring, vector<DWORD> &);
+	HANDLE getProcess(string);
 };
 Wind::Wind()
 {
@@ -32,20 +33,20 @@ void Wind::injectDll(const string &path, int pid)
 	//1打开目标进程
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 	//2申请远程内存空间
-	char * str = (char*)VirtualAllocEx(hProcess, 0, buffSize, MEM_COMMIT, PAGE_READWRITE);
+	LPVOID allocAddress = VirtualAllocEx(hProcess, 0, buffSize, MEM_COMMIT, PAGE_READWRITE);
 	//3将dll文件路径写入到内存
-	BOOL bsuccess = WriteProcessMemory(hProcess, str, dllPath.c_str(), buffSize, &realWrite);
+	BOOL bsuccess = WriteProcessMemory(hProcess, allocAddress, dllPath.c_str(), buffSize, &realWrite);
 	//4创建远程线程
-	HANDLE hThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, str, 0, 0);
+	HANDLE hThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, allocAddress, 0, 0);
 	
 	WaitForSingleObject(hThread, -1);
-	VirtualFreeEx(hProcess, str, 0, MEM_RELEASE);
+	VirtualFreeEx(hProcess, allocAddress, 0, MEM_RELEASE);
 	
 	CloseHandle(hThread);
 	CloseHandle(hProcess);
 }
 
-int Wind::eachProcess(wstring t)
+void Wind::eachProcess(wstring t, vector<DWORD> &results)
 {
 	// 遍历进程
 	HANDLE handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -58,11 +59,10 @@ int Wind::eachProcess(wstring t)
 			//if ( wcscmp(processEntry.szExeFile, L"System") == 0 )
 			if ( wcscmp(processEntry.szExeFile, t.c_str()) == 0 )
 			{
-				return (int)processEntry.th32ProcessID;
+				results.push_back(processEntry.th32ProcessID);
 			}
 		} while ( Process32NextW(handle, &processEntry) );
 	}
-	return 0;
 }
 vector<wstring> Wind::eachModule(const int &id)
 {
@@ -81,8 +81,94 @@ vector<wstring> Wind::eachModule(const int &id)
 	return str;
 }
 
+HANDLE Wind::getProcess(string name)
+{
+	HWND hwnd = FindWindow(NULL, name.c_str());
+	DWORD pid;
+	GetWindowThreadProcessId(hwnd, &pid);
+	return OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+}
+
 // 打开进程
 // HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, 2224);
 // 关闭进程
 // TerminateProcess(handle, 0);
+
+
+
+// int main(int argc, char const *argv[])
+// {
+// 	DWORD attFun = 0X41FD40;
+// 	HANDLE hProcess = wind.getProcess("Sword2 Window");
+
+// 	BYTE hookCode[8] = { 0XE9, 0x00, 0X00, 0X00, 0X00 , 0X90, 0X90, 0X90};
+
+// 	BYTE allocFun[] = { 0X56, 0X8B, 0XF1, 0X57, 0X81, 0X7E, 0X04, 0X02, 0X00, 0X00, 0X00, 0X75, 0X08, 0XC7, 0X44, 0X24, 0X0C, 0X00, 0X00, 0X00, 0X00, 0XE9, 0X00, 0X00, 0X00, 0X00 };
+// 	cout << hProcess << endl;
+
+// 	LPVOID allocAddr = VirtualAllocEx(hProcess, 0, 0x100, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	
+// 	LPVOID offset;
+// 	asm(
+// 		"subq %%rcx, %%rax\n"
+// 		"leaq (%%rax), %0"
+// 		: "=r"(offset)
+// 		: "a"(allocAddr), "c"(attFun+5)
+// 	);
+// 	memcpy(&hookCode[1], &offset, 4);
+
+// 	DWORD oldProtect = 0;
+// 	// 读写权限修改
+// 	VirtualProtectEx(hProcess, reinterpret_cast<LPVOID>(attFun), 8, PAGE_EXECUTE_READWRITE, &oldProtect);
+// 	//修改内存
+// 	WriteProcessMemory(hProcess, reinterpret_cast<LPVOID>(attFun), &hookCode, 8, NULL);
+// 	// 改回原来的权限
+// 	VirtualProtectEx(hProcess, reinterpret_cast<LPVOID>(attFun), 8, oldProtect, &oldProtect);
+
+
+// 	// 在新开辟的内存空间里面， 实现逻辑
+// 	LPVOID offset2;
+// 	asm(
+// 		"subq %%rcx, %%rax\n"
+// 		"leaq (%%rax), %0"
+// 		: "=r"(offset2)
+// 		: "a"(attFun+8), "c"((BYTE*)allocAddr+21+5)
+// 	);
+
+// 	memcpy(&allocFun[22], &offset2, 4);
+// 	WriteProcessMemory(hProcess, allocAddr, allocFun, sizeof(allocFun), NULL);
+
+// 	return 0;
+// }
+
+
+
+
+// void  autoHP()
+// {
+// 	DWORD* hp = (DWORD*)(0X4CEF18);
+// 	while (1)
+// 	{
+// 		if (*hp <= 500)
+// 		{
+// 			asm("pushq $0x52");
+// 			asm("movl $0x537400, %ecx");
+// 			asm("movl $0x004252E0, %eax"); 
+// 			asm(".code32");
+// 			asm("call *%eax");
+// 			asm(".code64");
+// 		}
+// 	}
+// }
+
+// int main(int argc, char const *argv[])
+// {
+// 	HANDLE hProcess = wind.getProcess("Sword2 Window");
+
+// 	LPVOID  lpAllocAddr = VirtualAllocEx(hProcess, 0, 0x100, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+// 	cout << lpAllocAddr << endl;
+	
+// 	WriteProcessMemory(hProcess, lpAllocAddr, (LPCVOID)autoHP, 0x100, NULL);
+// 	HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)lpAllocAddr, 0, 0, 0);
+// 	return 0;
+// }

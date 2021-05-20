@@ -5,6 +5,7 @@ using namespace std;
 Tool tool;
 File file;
 Json json;
+Wind wind;
 
 int main(int argc, char const *argv[])
 {
