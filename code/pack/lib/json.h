@@ -34,6 +34,7 @@ public:
 	
 	void parse(string&);
 	void stringify(string&);
+	string stringify();
 };
 
 
@@ -186,16 +187,16 @@ void Json::deEmpty(string& str)
 {
 	for (int i = 0; i < str.length(); ++i)
 	{
-		if ( str[i] == ' ' || str[i] == '\n' )
+		if ( str[0] == ' ' || str[0] == '\n' || str[0] == '\t' )
 		{
-			str.replace(i, 1, "");
+			str.replace(0, 1, "");
 		} else {
 			break;
 		}
 	}
 	for (int i = str.length()-1; i >=0; --i)
 	{
-		if ( str[i] == ' ' || str[i] == '\n' )
+		if ( str[i] == ' ' || str[i] == '\n' || str[i] == '\t' )
 		{
 			str.replace(i, 1, "");
 		} else {
@@ -333,4 +334,10 @@ void Json::stringify(string& str)
 		} 
 	}
 	str += "}";
+}
+string Json::stringify()
+{
+	string str;
+	stringify(str);
+	return str;
 }

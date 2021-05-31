@@ -36,7 +36,7 @@ string getTemplateDir(string dirName)
 void moveFile(string objectDir, string templateDir, int index)
 {
 	vector<string> files;
-	file.getAllFiles(templateDir, files);
+	file.getAll(templateDir, files);
 	for (int i = 0; i < files.size(); ++i)
 	{
 		if (  (files[i][files[i].length()-1] !='.') )

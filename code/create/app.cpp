@@ -36,7 +36,7 @@ string getTemplateDir(string dirName)
 void moveFile(string objectDir, string templateDir, int index)
 {
 	vector<string> files;
-	file.getAllFiles(templateDir, files);
+	file.getAll(templateDir, files);
 	for (int i = 0; i < files.size(); ++i)
 	{
 		if (  (files[i][files[i].length()-1] !='.') )
@@ -103,12 +103,12 @@ int main(int argc, char const *argv[])
 	
 	string projectDir = getTemplateDir("project");
 	string projectFileText;
-	file.readFile(projectDir+"\\"+(json << "type")+".cpp", projectFileText);
-	file.writeFile(objectDir+"\\"+(json << "name")+"\\app.cpp", projectFileText);
+	file.read(projectDir+"\\"+(json << "type")+".cpp", projectFileText);
+	file.write(objectDir+"\\"+(json << "name")+"\\app.cpp", projectFileText);
 	cout << "\t" << "create: " << tool.color(14, [](){ cout << "app.cpp"; }) << endl;
 	string jsonString;
 	json.stringify(jsonString);
-	file.writeFile(objectDir+"\\"+(json << "name")+"\\package.json", jsonString);
+	file.write(objectDir+"\\"+(json << "name")+"\\package.json", jsonString);
 	cout << "\t" << "create: " << tool.color(14, [](){ cout << "package.json"; }) << endl;
 
 

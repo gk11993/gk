@@ -8,11 +8,11 @@ class File
 public:
 	File();
 	~File();
-	void getAllFiles(string, vector<string>&);
+	void getAll(string, vector<string>&);
 	string getPath();
 	string getCurrDir();
-	void readFile(string, string &);
-	void writeFile(string, const string &);
+	void read(string, string &);
+	void write(string, const string &);
 
 };
 File::File()
@@ -25,7 +25,7 @@ File::~File()
 
 }
 
-void File::writeFile(string path, const string &text)
+void File::write(string path, const string &text)
 {
 	ofstream ofs;
 	ofs.open(path, ios::out);
@@ -33,7 +33,7 @@ void File::writeFile(string path, const string &text)
 	ofs.close();
 }
 
-void File::readFile(string path, string &result)
+void File::read(string path, string &result)
 {
 	ifstream ifs;
 	ifs.open(path, ios::in);
@@ -54,7 +54,7 @@ string File::getPath()
 	return ExePath;
 }
 
-void File::getAllFiles(string path, vector<string>& files) 
+void File::getAll(string path, vector<string>& files) 
 {
 	long hFile = 0;
 	struct _finddata_t fileinfo;  
@@ -69,13 +69,3 @@ void File::getAllFiles(string path, vector<string>& files)
 	}
 }
 
-// DeleteFileW(L"C:\\Users\\Administrator\\Desktop\\新建文本文档 (4).txt");
-// CopyFileW(L"C:\\Users\\Administrator\\Desktop\\新建文本文档 (4).txt", L"C:\\Users\\Administrator\\Desktop\\win\\新建文本文档 (4).txt", false);
-// MoveFileW(L"C:\\Users\\Administrator\\Desktop\\新建文本文档 (4).txt", L"C:\\Users\\Administrator\\Desktop\\win\\111.txt");
-// CreateDirectory("1", NULL);
-// writeFile("file.txt", "1111");
-// string *p = new string;
-// readFile("file.txt", *p);
-// delete p;
-// getCurrDir()
-// getPath()

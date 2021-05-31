@@ -10,7 +10,7 @@ vector<string> getName(string dir)
 {
 	vector<string> s;
 	vector<string> names;
-	file.getAllFiles(dir, s);
+	file.getAll(dir, s);
 	for (int i = 0; i < s.size(); ++i)
 	{
 		if ( (tool.indexOf(s[i], ".cpp") != -1) || tool.indexOf(s[i], ".dll") != -1 )
@@ -35,7 +35,7 @@ void getJson()
 {
 	string objectDir(file.getCurrDir());
 	string jsonString;
-	file.readFile(objectDir+"\\package.json", jsonString);
+	file.read(objectDir+"\\package.json", jsonString);
 	json.parse(jsonString);
 }
 
