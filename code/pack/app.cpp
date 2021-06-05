@@ -115,7 +115,7 @@ int main(int argc, char const *argv[])
 			break;
 			case 1:
 				system(string("g++ --share app.cpp -o app.dll").c_str());
-				cout << "Dll can't run" << endl;
+				cout << "compile finish, but this program cannot be run in alone" << endl;
 			break;
 		}
 	}
