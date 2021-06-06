@@ -9,3 +9,5 @@
 *  [createjs] install node project 
 *  [pack] compile c++ to exe file 
 *  [gk] Planned for extensions
+
+### the entrance at  bin folder
