@@ -2,8 +2,13 @@
 
 Tool tool;
 File file;
+
+
+
 int main(int argc, char const *argv[])
 {
+	
+
 	if ( argc == 1 )
 	{
 		cout << "hi" << endl;
@@ -20,6 +25,21 @@ int main(int argc, char const *argv[])
 	}
 	else if ( string(argv[1]) == "-v" ) {
 		cout << "version: " << "1" << endl;
+	}
+	else if ( string(argv[1]) == "init" ) {
+		string path = file.getPath();
+		tool.strArrSub(path, "\\", TRUE);
+		tool.strArrSub(path, "\\", TRUE);
+		path += "code\\";
+		string pathBin = path;
+		tool.strArrSub(pathBin, "\\", TRUE);
+		pathBin += "bin\\";
+		system(string("g++ "+path +"create\\app.cpp -o "+pathBin+"create").c_str());
+		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"create.exe";}) << endl;
+		system(string("g++ "+path +"createjs\\app.cpp -o "+pathBin+"createjs").c_str());
+		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"createjs.exe";}) << endl;
+		system(string("g++ "+path +"pack\\app.cpp -o "+pathBin+"pack").c_str());
+		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"pack.exe";}) << endl;
 	}
 	
 	return 0;

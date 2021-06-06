@@ -1,5 +1,2 @@
-here need compile at cpp
-create.exe
-createjs.exe
-gk.exe
-pack.exe
+here need gk.exe , should compile gk.exe in cpp then move to bin
+then gk init

@@ -13,7 +13,7 @@ public:
 	string getCurrDir();
 	void read(string, string &);
 	void write(string, const string &);
-
+	string subDir(string &);
 };
 File::File()
 {
@@ -68,4 +68,3 @@ void File::getAll(string path, vector<string>& files)
 		_findclose(hFile);
 	}
 }
-

@@ -17,17 +17,13 @@ string getObjectDir(string name)
 	CreateDirectory(object.c_str(), NULL);
 	return object; 
 }
-void subDir(string &path)
-{
-	vector<string> dir = tool.split(path, "\\");
 
-	path.replace(tool.indexOf(path, dir[dir.size()-1]), path.size(), "");
-}
+
 string getTemplateDir(string dirName)
 {
 	string path = file.getPath();
-	subDir(path);
-	subDir(path);
+	tool.strArrSub(path, "\\", TRUE);
+	tool.strArrSub(path, "\\", TRUE);
 
 	vector<string> files;
 	path += "cpp\\"+ dirName +"\\";
