@@ -66,12 +66,12 @@ Message::~Message()
 void Message::getMessage(void (*t)(vector<string>&, Json&))
 {
 	SOCKET server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	sockaddr_in getAdde;
-	getAdde.sin_family = AF_INET;
-	getAdde.sin_port = htons(80);
-	getAdde.sin_addr.s_addr = INADDR_ANY;
+	sockaddr_in socketAddr;
+	socketAddr.sin_family = AF_INET;
+	socketAddr.sin_port = htons(80);
+	socketAddr.sin_addr.s_addr = INADDR_ANY;
 
-	bind(server, (sockaddr *)&getAdde, sizeof(getAdde));
+	bind(server, (sockaddr *)&socketAddr, sizeof(socketAddr));
 	listen(server, 2);
 	
 	sockaddr_in claddr;
