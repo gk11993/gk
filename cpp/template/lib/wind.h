@@ -10,10 +10,17 @@ class Wind
 public:
 	Wind();
 	~Wind();
-	void injectDll(const string&, int);
+	
 	vector<wstring> eachModule(const int &);
 	void eachProcess(wstring, vector<DWORD> &);
-	HANDLE getProcess(string);
+
+	
+	DWORD getPid(wstring);
+	DWORD getPid(string);
+	HANDLE getProcess(wstring, DWORD);
+	HANDLE getProcess(string, DWORD);
+	void injectDll(const string &, wstring, DWORD);
+	void injectDll(const string &, string, DWORD);
 };
 Wind::Wind()
 {
@@ -24,27 +31,8 @@ Wind::~Wind()
 {
 
 }
-void Wind::injectDll(const string &path, int pid)
-{
-	//string dllPath = "D:\\object\\day1\\app.dll";
-	string dllPath = path;
-	DWORD buffSize = dllPath.length() + 1;
-	SIZE_T realWrite = 0;
-	//1打开目标进程
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-	//2申请远程内存空间
-	LPVOID allocAddress = VirtualAllocEx(hProcess, 0, buffSize, MEM_COMMIT, PAGE_READWRITE);
-	//3将dll文件路径写入到内存
-	BOOL bsuccess = WriteProcessMemory(hProcess, allocAddress, dllPath.c_str(), buffSize, &realWrite);
-	//4创建远程线程
-	HANDLE hThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, allocAddress, 0, 0);
-	
-	WaitForSingleObject(hThread, -1);
-	VirtualFreeEx(hProcess, allocAddress, 0, MEM_RELEASE);
-	
-	CloseHandle(hThread);
-	CloseHandle(hProcess);
-}
+
+
 
 void Wind::eachProcess(wstring t, vector<DWORD> &results)
 {
@@ -81,13 +69,83 @@ vector<wstring> Wind::eachModule(const int &id)
 	return str;
 }
 
-HANDLE Wind::getProcess(string name)
+
+DWORD Wind::getPid(wstring name)
+{
+	HWND hwnd = FindWindowW(NULL, name.c_str());
+	DWORD pid;
+	GetWindowThreadProcessId(hwnd, &pid);
+	return DWORD(pid);
+}
+DWORD Wind::getPid(string name)
 {
 	HWND hwnd = FindWindow(NULL, name.c_str());
 	DWORD pid;
 	GetWindowThreadProcessId(hwnd, &pid);
+	return DWORD(pid);
+}
+
+HANDLE Wind::getProcess(string name, DWORD pid=0)
+{
+	if ( pid == 0 ) pid = getPid(name);
+	cout << pid << endl;
+	OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 	return OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 }
+HANDLE Wind::getProcess(wstring name, DWORD pid=0)
+{
+	if ( pid == 0 ) pid = getPid(name);
+	OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	return OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+}
+
+void Wind::injectDll(const string &path, string name, DWORD pid=0)
+{
+	string dllPath = path;
+	DWORD buffSize = dllPath.length() + 1;
+	SIZE_T realWrite = 0;
+
+	if ( pid == 0 ) pid = getPid(name);
+
+	//1打开目标进程
+	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	//2申请远程内存空间
+	LPVOID allocAddress = VirtualAllocEx(hProcess, 0, buffSize, MEM_COMMIT, PAGE_READWRITE);
+	//3将dll文件路径写入到内存
+	BOOL bsuccess = WriteProcessMemory(hProcess, allocAddress, dllPath.c_str(), buffSize, &realWrite);
+	//4创建远程线程
+	HANDLE hThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, allocAddress, 0, 0);
+	
+	WaitForSingleObject(hThread, -1);
+	VirtualFreeEx(hProcess, allocAddress, 0, MEM_RELEASE);
+	
+	CloseHandle(hThread);
+	CloseHandle(hProcess);
+}
+void Wind::injectDll(const string &path, wstring name, DWORD pid=0)
+{
+	string dllPath = path;
+	DWORD buffSize = dllPath.length() + 1;
+	SIZE_T realWrite = 0;
+	if ( pid == 0 ) pid = getPid(name);
+
+	//1打开目标进程
+	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
+	//2申请远程内存空间
+	LPVOID allocAddress = VirtualAllocEx(hProcess, 0, buffSize, MEM_COMMIT, PAGE_READWRITE);
+	//3将dll文件路径写入到内存
+	BOOL bsuccess = WriteProcessMemory(hProcess, allocAddress, dllPath.c_str(), buffSize, &realWrite);
+	//4创建远程线程
+	HANDLE hThread = CreateRemoteThread(hProcess, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, allocAddress, 0, 0);
+	
+	WaitForSingleObject(hThread, -1);
+	VirtualFreeEx(hProcess, allocAddress, 0, MEM_RELEASE);
+	
+	CloseHandle(hThread);
+	CloseHandle(hProcess);
+}
+
+
 
 // 打开进程
 // HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, 2224);
