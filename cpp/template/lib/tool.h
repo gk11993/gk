@@ -59,14 +59,15 @@ void Tool::strArrSub(string &path, string pattern, bool r=FALSE)
     vector<string> dir = split(path, pattern);
     path.replace(indexOf(path, dir[dir.size()-1], r), path.size(), "");
 }
-long long Tool::indexOf(const string &s, string pattern, bool r=FALSE)
+long long Tool::indexOf(const string &str, string pattern, bool r=FALSE)
 {
     long long result = -1;
+    if ( pattern.size() > str.size() ) return result;
     if ( r )
     {
-        for (int i = s.size()-1; i >= pattern.size()-1 ; --i)
+        for (int i = str.size()-1; i >= pattern.size()-1 ; --i)
         {
-            string curr = s.substr(i, pattern.size());
+            string curr = str.substr(i, pattern.size());
             if ( curr == pattern )
             {
                 result = i;
@@ -74,9 +75,9 @@ long long Tool::indexOf(const string &s, string pattern, bool r=FALSE)
             }
         }    
     } else {
-        for (int i = 0; i < s.size()-pattern.size()+1; ++i)
+        for (int i = 0; i < str.size()-pattern.size()+1; ++i)
         {
-            string curr = s.substr(i, pattern.size());
+            string curr = str.substr(i, pattern.size());
             if ( curr == pattern )
             {
                 result = i;

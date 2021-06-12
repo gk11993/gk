@@ -173,7 +173,21 @@ string Json::operator<<(string key)
 
 long long Json::indexOf(string & str, string pattern)
 {
-	return str.find(pattern);
+    long long result = -1;
+    if ( pattern.size() > str.size() ) return result;
+   
+   	int psize = pattern.size();
+   	string curr;
+    for (int i = 0; i < str.size()-psize+1; ++i)
+    {
+        curr = str.substr(i, psize);
+        if ( curr == pattern )
+        {
+            result = i;
+            break;
+        }
+    }
+    return  result;
 }
 
 void Json::decorate(string & str)
