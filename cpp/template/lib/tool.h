@@ -61,7 +61,30 @@ void Tool::strArrSub(string &path, string pattern, bool r=FALSE)
 }
 long long Tool::indexOf(const string &s, string pattern, bool r=FALSE)
 {
-    return  r ? s.rfind(pattern) : s.find(pattern);
+    long long result = -1;
+    if ( r )
+    {
+        for (int i = s.size()-1; i >= pattern.size()-1 ; --i)
+        {
+            string curr = s.substr(i, pattern.size());
+            if ( curr == pattern )
+            {
+                result = i;
+                break;
+            }
+        }    
+    } else {
+        for (int i = 0; i < s.size()-pattern.size()+1; ++i)
+        {
+            string curr = s.substr(i, pattern.size());
+            if ( curr == pattern )
+            {
+                result = i;
+                break;
+            }
+        }
+    }
+    return  result;
 }
 
 template<class T> char Tool::color(int n, T t)
