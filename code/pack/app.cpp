@@ -110,8 +110,9 @@ int main(int argc, char const *argv[])
 				system(gStrand.c_str());
 
 				// break looping
-				if ( tool.indexOf(file.getPath(), objectDir) != 0 )
+				if ( objectDir+".exe" != file.getPath() ) {
 					system(objectDir.c_str());
+				}
 			break;
 			case 1:
 				system(string("g++ --share app.cpp -o app.dll").c_str());
