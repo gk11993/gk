@@ -71,7 +71,7 @@ int main(int argc, char const *argv[])
 		switch( i )
 		{
 			case 0:
-			cout << "[0, 1, 2, 3, 4, 5||-s]{notrun, ii, s, o, exe, ii+s}" << endl;
+			cout << "[0, 1, 2, 3, 4, 5]{notrun, ii, s, o, exe, ii+s}" << endl;
 			break;
 			case 1:
 			gStrand += libws2+"-o app.ii -E";
@@ -94,7 +94,7 @@ int main(int argc, char const *argv[])
 			system(gStrand.c_str());
 		}
 		//encode to assembly
-		if ( string(argv[1]) == "-s" || atoi(argv[1]) == 5 ) {
+		if ( atoi(argv[1]) == 5 ) {
 			gStrand += libws2+"-o app.ii -E";
 			system(gStrand.c_str());
 			system(string("g++ app.ii "+libws2+"-o app.s -S").c_str());
