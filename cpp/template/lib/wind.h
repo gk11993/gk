@@ -13,14 +13,15 @@ public:
 	
 	vector<wstring> eachModule(const int &);
 	void eachProcess(wstring, vector<DWORD> &);
-
 	
+	DWORD getId(wstring);
 	DWORD getPid(wstring);
 	DWORD getPid(string);
 	HANDLE getProcess(wstring, DWORD);
 	HANDLE getProcess(string, DWORD);
 	void injectDll(const string &, wstring, DWORD);
 	void injectDll(const string &, string, DWORD);
+	void jmp(LPVOID, LPCVOID);
 };
 Wind::Wind()
 {
@@ -68,7 +69,12 @@ vector<wstring> Wind::eachModule(const int &id)
 	}
 	return str;
 }
-
+DWORD Wind::getId(wstring name)
+{
+	vector<DWORD> d;
+	eachProcess(name, d);
+	return d[0];
+}
 
 DWORD Wind::getPid(wstring name)
 {
@@ -145,14 +151,28 @@ void Wind::injectDll(const string &path, wstring name, DWORD pid=0)
 	CloseHandle(hProcess);
 }
 
+void Wind::jmp(LPVOID hookAddr, LPCVOID hookFun)
+{
 
+	BYTE hookCode[5] = { 0XE9, 0x00, 0X00, 0X00, 0X00 };
 
-// 打开进程
-// HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, 2224);
-// 关闭进程
-// TerminateProcess(handle, 0);
+	LPVOID offset;
+ 	asm("subq %%rcx, %%rax ;""leaq -5(%%rax), %0":"=r"(offset):"a"(hookFun), "c"(hookAddr));
+ 	memcpy(&hookCode[1], &offset, 4);
 
+	//自己窗口的句柄
+  	HANDLE h = OpenProcess(PROCESS_ALL_ACCESS, 0, GetCurrentProcessId());
 
+	DWORD oldProtect = 0;
+	// 读写权限修改
+	VirtualProtectEx(h, hookAddr, sizeof(hookCode), PAGE_EXECUTE_READWRITE, &oldProtect);
+	//修改内存
+	WriteProcessMemory(h, hookAddr, &hookCode, sizeof(hookCode), NULL);
+	// 改回原来的权限
+	VirtualProtectEx(h, hookAddr, sizeof(hookCode), oldProtect, &oldProtect);
+
+	CloseHandle(h);
+}
 
 // int main(int argc, char const *argv[])
 // {
@@ -198,8 +218,6 @@ void Wind::injectDll(const string &path, wstring name, DWORD pid=0)
 
 // 	return 0;
 // }
-
-
 
 
 // void  autoHP()
