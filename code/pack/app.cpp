@@ -6,30 +6,6 @@ using namespace std;
 Tool tool;
 File file;
 Json json;
-vector<string> getName(string dir)
-{
-	vector<string> s;
-	vector<string> names;
-	file.getAll(dir, s);
-	for (int i = 0; i < s.size(); ++i)
-	{
-		if ( (tool.indexOf(s[i], ".cpp") != -1) || tool.indexOf(s[i], ".dll") != -1 )
-		{
-			vector<string> dir = tool.split(s[i], "\\");
-			names.push_back(dir[dir.size()-1]);
-		}
-	}
-	return names;
-}
-string getGKstrand()
-{
-	string objectDir(file.getCurrDir());
-	vector<string> names = getName(objectDir);
-	
-	string g = "g++ ";
-	for (int i = 0; i < names.size(); ++i) g += names[i]+" ";
-	return g;
-}
 
 void getJson()
 {
@@ -45,22 +21,33 @@ int main(int argc, char const *argv[])
 	t.begin();
 
 	getJson();
+	string gpp = "g++";
 	vector<string> keys = {"empty", "dll", "message"};
 
 	int index = tool.findKey(keys, json << "type");
 	if ( index == -1 )
 	{
-		cout << "failed to not find package.json in type" << endl;
-		return 0;
-	}
-
-	string libws2 = "";
-	if ( index == 2 ) {
-		libws2 = "-lws2_32 ";
+		cout << "failed to not find package.json in type. trying empty" << endl;
 		index = 0;
 	}
 
-	string gStrand = getGKstrand();
+	string staticStr = "";
+	if ( (json << "static") == "1" )
+	{
+		staticStr = "-static";
+	}
+
+	string libws2 = "";
+	if ( (json << "libws2") == "1" )
+	{
+		libws2 = "-lws2_32 ";
+	}
+	if ( index == 2 )
+	{
+		index = 0;
+	}
+
+	string strand = "";
 	string objectDir(file.getCurrDir()+"\\"+"app");
 	int i = 0;
 	if ( argc > 1 )
@@ -74,31 +61,29 @@ int main(int argc, char const *argv[])
 			cout << "[0, 1, 2, 3, 4, 5]{notrun, ii, s, o, exe, ii+s}" << endl;
 			break;
 			case 1:
-			gStrand += libws2+"-o app.ii -E";
+			strand = gpp + " app.cpp "+libws2+" -o app.ii -E";
 			break;
 			case 2:
-			gStrand = "g++ app.ii "+libws2+"-o app.s -S";
+			strand = gpp + " app.ii "+libws2+" -o app.s -S";
 			break;
 			case 3:
-			gStrand = "g++ app.s "+libws2+"-o app.o -c";
+			strand = gpp +" app.s "+libws2+" -o app.o -c";
 			break;
 			case 4:
-			gStrand = "g++ app.o "+libws2+"-o app";
+			strand = gpp +" app.o "+libws2+" -o app";
 			break;
 		}
 		if ( i > 0 &&  i < 5 ) {
 			if ( i == 4 && index == 1 )
 			{
-				gStrand = "g++ --share app.cpp -o app.dll";
+				strand = gpp +" --share app.o "+ libws2 +" -o app.dll";
 			}
-			system(gStrand.c_str());
+			system(strand.c_str());
 		}
 		//encode to assembly
 		if ( atoi(argv[1]) == 5 ) {
-			gStrand += libws2+"-o app.ii -E";
-			system(gStrand.c_str());
-			system(string("g++ app.ii "+libws2+"-o app.s -S").c_str());
-			//open build file at sublime 
+			system(string(gpp + " app.cpp "+libws2+" -o app.ii -E").c_str());
+			system(string( gpp + " app.ii "+libws2+" -o app.s -S").c_str());
 			system(string("subl "+objectDir+".s").c_str());
 		}
 		
@@ -106,31 +91,26 @@ int main(int argc, char const *argv[])
 		switch (index)
 		{
 			case 0:
-				gStrand += libws2+"-o app";
-				system(gStrand.c_str());
-
-				// break looping
-				if ( objectDir+".exe" != file.getPath() ) {
-					system(objectDir.c_str());
-				}
+				system(string(gpp + " app.cpp "+libws2+" -o app.exe "+ staticStr).c_str());
+				system(objectDir.c_str());
 			break;
 			case 1:
-				system(string("g++ --share app.cpp -o app.dll").c_str());
+				system(string(gpp+" --share app.cpp "+ libws2 +" -o app.dll "+ staticStr).c_str());
 				cout << "compile finish, but this program cannot be run in alone" << endl;
 			break;
 		}
 	}
 
+	//not run
 	if ( i == -1 ) {
 		if ( index == 1 )
 		{
-			system(string("g++ --share app.cpp -o app.dll").c_str());
+			system(string(gpp + " --share app.cpp "+ libws2 +" -o app.dll "+ staticStr).c_str());
 		} else {
-			gStrand += libws2+"-o app";
-			system(gStrand.c_str());
+			system(string(gpp + " app.cpp "+libws2+" -o app.exe "+ staticStr).c_str());
 		}
 	}
 
-	cout <<"[Finished in " << t.ends() << "s, v: 2]" << endl;
+	cout <<"[Finished in " << t.ends() << "s, v: 3]" << endl;
 	return 0;
 }

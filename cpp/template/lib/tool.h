@@ -15,7 +15,7 @@ public:
     char randStr();
     long long indexOf(const string &, string, bool);
     template<class T> char color(int, T);
-    void strArrSub(string &, string, bool);
+    void strArrSub(string &, string);
     int findKey(vector<string>&,  string);
 };
 Tool::Tool()
@@ -54,10 +54,10 @@ char Tool::randStr()
 {
     return random(97, 123);
 }
-void Tool::strArrSub(string &path, string pattern, bool r=FALSE)
+void Tool::strArrSub(string &path, string pattern)
 {
     vector<string> dir = split(path, pattern);
-    path.replace(indexOf(path, dir[dir.size()-1], r), path.size(), "");
+    path.replace(indexOf(path, dir[dir.size()-1], TRUE), path.size(), "");
 }
 long long Tool::indexOf(const string &str, string pattern, bool r=FALSE)
 {
@@ -103,73 +103,17 @@ int Tool::findKey(vector<string>& vec,  string key)
     }
     return -1;
 }
-// 打开进程
-    // HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, 2224);
-    // 关闭进程
-    // TerminateProcess(handle, 0);
-    // 遍历进程
-    // HANDLE handle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    // PROCESSENTRY32W processEntry = {sizeof(PROCESSENTRY32W)};
-    // bool success = Process32FirstW(handle, &processEntry);
-
-    // if ( success )
-    // {
-    //  do
-    //  {
-    //      if ( wcscmp(processEntry.szExeFile, L"System") == 0 )
-    //      {
-    //          cout << "yes" << endl;
-    //          break;
-    //      }
-    //      wcout << "ID: " << processEntry.th32ProcessID << "\t" << "name: " << processEntry.szExeFile << endl;
-    //  } while ( Process32NextW(handle, &processEntry) );
-        
-    // }
-
-    // 遍历模块
-    // HANDLE handle = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, 1092); //进程ID
-    // MODULEENTRY32W moduleEntry = {sizeof(MODULEENTRY32W)};
-    // bool success = Module32FirstW(handle, &moduleEntry);
-
-    // if ( success )
-    // {
-    //  do
-    //  {
-    //      wcout << "module path: " << moduleEntry.szExePath << endl;
-    //  } while ( Module32NextW(handle, &moduleEntry) );
-        
-    // }
-
-    //启动线程
-    // thread t(fun);
-    // t.join();
-    // t.detach();
-
-    
-    
-    
-
-
+//启动线程
+// thread t(fun);
+// t.join();
+// t.detach();
 
 //文本转整数 cahr类型atoi
-    // string n = "1";
-    // cout <<  stoi(n) + stoi(n) << endl;
+// char n[20];
+// strcpy(n, "123");
+// cout << atoi(n)+1 << endl;
 
-    // char n[20];
-    // strcpy(n, "123");
-    // cout << atoi(n)+1 << endl;
-    
-    //数字转文本
-    // char str[255] = {0};
-    // itoa(15, str, 10);
-    // string str1;
-    // str1 = str;
-    // cout << str1 +"b" << endl;
-
-    //const char *c_str(); 
-    //c_str()函数返回一个指向正规C字符串的指针常量, 内容与本string串相同. 
-    //这是为了与c语言兼容，在c语言中没有string类型，故必须通过string类对象的成员函数c_str()把string 对象转换成c中的字符串样式。
-    // char *c = new char[255];
-    // string s = "1234";
-    // strcpy(c, s.c_str());
-    // delete c;
+//数字转文本
+// char str[255] = {0};
+// itoa(15, str, 10);
+// cout << str1  << endl;

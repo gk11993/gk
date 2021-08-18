@@ -3,18 +3,14 @@
 Tool tool;
 File file;
 
-
-
 int main(int argc, char const *argv[])
 {
-	
 
 	if ( argc == 1 )
 	{
 		cout << "hi" << endl;
 		return 0;
 	}
-
 
 	if ( string(argv[1]) == "console" )
 	{
@@ -28,11 +24,11 @@ int main(int argc, char const *argv[])
 	}
 	else if ( string(argv[1]) == "init" ) {
 		string path = file.getPath();
-		tool.strArrSub(path, "\\", TRUE);
-		tool.strArrSub(path, "\\", TRUE);
+		tool.strArrSub(path, "\\");
+		tool.strArrSub(path, "\\");
 		path += "code\\";
 		string pathBin = path;
-		tool.strArrSub(pathBin, "\\", TRUE);
+		tool.strArrSub(pathBin, "\\");
 		pathBin += "bin\\";
 		system(string("g++ "+path +"create\\app.cpp -o "+pathBin+"create").c_str());
 		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"create.exe";}) << endl;

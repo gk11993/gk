@@ -22,8 +22,8 @@ string getObjectDir(string name)
 string getTemplateDir(string dirName)
 {
 	string path = file.getPath();
-	tool.strArrSub(path, "\\", TRUE);
-	tool.strArrSub(path, "\\", TRUE);
+	tool.strArrSub(path, "\\");
+	tool.strArrSub(path, "\\");
 
 	vector<string> files;
 	path += "cpp\\"+ dirName +"\\";
@@ -67,6 +67,10 @@ int main(int argc, char const *argv[])
 	vector<string> projects = {"-e", "-d", "-m"};
 	vector<string> keys = {"empty", "dll", "message"};
 
+	//json / "" / "x";
+	json / "0" / "libws2";
+	json / "0" / "static";
+
 	if ( argc == 2 )
 	{
 		if ( string(argv[1]) == "-help" )
@@ -78,18 +82,19 @@ int main(int argc, char const *argv[])
 	}
 	if ( argc > 2 )
 	{
-		
 		int index = tool.findKey(projects, argv[2]);
 		if ( index != -1 )
 		{
 			json / keys[index] / "type";
+			if ( index == 2 )
+			{
+				json / "1" / "libws2";
+			}
 		} else {
 			cout << "warnig: not project " << endl;
 			return 0;
 		}
 	}
-
-	
 	
 	string objectDir = getObjectDir(argv[1]);
 	cout << "::type--> " << tool.color(13, [](){cout << (json << "type");}) << endl;
@@ -106,7 +111,6 @@ int main(int argc, char const *argv[])
 	json.stringify(jsonString);
 	file.write(objectDir+"\\"+(json << "name")+"\\package.json", jsonString);
 	cout << "\t" << "create: " << tool.color(14, [](){ cout << "package.json"; }) << endl;
-
 
 	
 	cout << "[------------done----version: 6]"<< endl;

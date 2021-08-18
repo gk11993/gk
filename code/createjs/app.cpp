@@ -70,8 +70,6 @@ int main(int argc, char const *argv[])
 		return 0;
 	}
 
-
-
 	if ( argc == 2 )
 	{
 		if ( string(argv[1]) == "-help" )
@@ -82,13 +80,10 @@ int main(int argc, char const *argv[])
 		
 	}
 	
-	
 	string objectDir = getObjectDir(argv[1]);
 	string templateDir = getTemplateDir("template");
 	moveFile(objectDir, templateDir, 1);
 
-
-	
 	cout << "[------------done----version: 1]"<< endl;
 	return 0;
 }
