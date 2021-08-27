@@ -1,0 +1,23 @@
+{
+	"manifest_version": 2,
+	"name": "frame",
+	"version": "1.0.0",
+	"content_scripts": [{
+		"matches": ["<all_urls>"],
+		"js": ["script/gk.js", "script/content.js"]
+	}],
+	"background": {
+		"scripts": ["script/background.js"]
+	},
+	"icons": {
+		"16": "image/fish_16.png",
+		"48": "image/fish_48.png",
+		"128": "image/fish_128.png"
+	},
+	"browser_action": {
+        "default_icon": "image/fish_128.png",
+        "default_title": "My fish",
+        "default_popup": "popup.html"
+    },
+	"permissions" : ["tabs", "notifications", "*://*/", "downloads", "webRequest", "webRequestBlocking", "contextMenus"]
+}

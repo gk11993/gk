@@ -25,14 +25,12 @@ require('http').createServer( (request, response) => {
 		}
 	} else {
 		let postdata = ""
-        request.addListener("data", postchunk => postdata += postchunk)
+        request.addListener("data", data => postdata += data)
         request.addListener("end",() => {
-            let params = JSON.parse(postdata)
-            response.writeHead(200, {"Content-Type": "application/json"})
             ~async function () {
-				response.end(JSON.stringify( await main(request.url.split("/"), params) ))
+            	response.writeHead(200, {"Content-Type": "application/json"})
+				response.end(JSON.stringify( await main(request.url.split("/"), JSON.parse(postdata)) ))
 			}()
-			
         })
 	}
 

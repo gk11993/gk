@@ -55,27 +55,11 @@ void moveFile(string objectDir, string templateDir, int index)
 			} else {
 				CopyFile(string(templateDir+"\\"+name).c_str(), string(objectDir+"\\"+name).c_str(), false);
 			}
-
 		}
-
 	}
 }
 
-void mainAppend(string name, string& buff)
-{
-	string main = file.getCurrDir()+"\\rain\\main.js";
-	
-	string str;
-	file.read(main, str);
-	string needStr = str.substr(0, str.size()-2);
-	needStr += "\t"+name+": async _=> await require('./"+name+"')(_),\n}\n";
-	file.write(main, needStr);
 
-	string newFile = file.getCurrDir()+"\\rain\\"+name+".js";
-
-	file.write(newFile, "\nmodule.exports = async _=> {\n\t\n}\n");
-	buff = newFile;
-}
 int main(int argc, char const *argv[])
 {
 	 
@@ -89,7 +73,7 @@ int main(int argc, char const *argv[])
 	{
 		if ( string(argv[1]) == "-help" )
 		{
-			cout << "this is node.js workbanch" << endl;
+			cout << "this is about chrome_extensions frame" << endl;
 			return 0;
 		}
 	}
@@ -98,18 +82,12 @@ int main(int argc, char const *argv[])
 		if ( string(argv[1]) == "create" )
 		{
 			string objectDir = getObjectDir(argv[2]);
-			string templateDir = getTemplateDir("template");
+			string templateDir = getTemplateDir("chrome-extend");
 			moveFile(objectDir, templateDir, 1);
 		}
-		else if ( string(argv[1]) == "append" )
-		{
-			string buff;
-			mainAppend(argv[2], buff);
-			cout << buff << endl;
-			system(string("subl "+buff).c_str());
-		}
+		
 	}
 	
-	cout << "[------------done----version: 2]"<< endl;
+	cout << "[------------done----version: 1]"<< endl;
 	return 0;
 }
