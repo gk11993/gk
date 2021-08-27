@@ -1,4 +1,4 @@
 
 module.exports = {
-	home: _=> require('./home'),
+	home: async _=> await require('./home')(_),
 }

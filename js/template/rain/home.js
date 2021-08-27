@@ -1,1 +1,4 @@
-module.exports = { Raindrop: global.param, talk: "Welecome to home" }
+
+module.exports = async _ => {
+	return { Raindrop: _, talk: "welcome" }
+}

@@ -32,8 +32,8 @@ int main(int argc, char const *argv[])
 		pathBin += "bin\\";
 		system(string("g++ "+path +"create\\app.cpp -o "+pathBin+"create").c_str());
 		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"create.exe";}) << endl;
-		system(string("g++ "+path +"createjs\\app.cpp -o "+pathBin+"createjs").c_str());
-		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"createjs.exe";}) << endl;
+		system(string("g++ "+path +"nodejs\\app.cpp -o "+pathBin+"nodejs").c_str());
+		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"nodejs.exe";}) << endl;
 		system(string("g++ "+path +"pack\\app.cpp -o "+pathBin+"pack").c_str());
 		cout << "done-->" << tool.color(11, [pathBin]() {cout << pathBin+"pack.exe";}) << endl;
 	}
