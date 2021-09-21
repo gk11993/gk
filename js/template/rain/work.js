@@ -33,10 +33,7 @@ function click(outxy) {
 	cmd(adb.click+outxy)
 }
 
-async function sleep(ms)
-{
-	return new Promise(resolve => setTimeout(resolve, ms))
-}
+let sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 module.exports = async _=> {
 	
