@@ -1,1 +1,1 @@
-## here need adb.exe with AdbWinApi.dll
+## here need adb.exe and AdbWinApi.dll and AdbWinUsbApi.dll
