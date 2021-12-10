@@ -6,18 +6,10 @@ let path = require('path')
 let process = require('child_process')
 let median = require('../common/median')
 
-let { createCanvas, loadImage } = require('canvas')
+let PNG = require("pngjs").PNG
 
 let data = fs.readFileSync("bench/median.json", 'utf-8')
 median.data = data ? JSON.parse(data) : []
-
-async function getImg() {
-	const myimg = await loadImage('bench/screenshot_0.png')
-	const canvas = createCanvas(myimg.width, myimg.height)
-    const ctx = canvas.getContext('2d')
-    ctx.drawImage(myimg, 0, 0)
-    median.getImg(ctx.getImageData(0, 0, myimg.width, myimg.height))
-}
 
 
 let cmdadb = path.join(__dirname,'../')+'cmd/adb '
@@ -33,19 +25,23 @@ function click(outxy) {
 	cmd(adb.click+outxy)
 }
 
+async function capture() {
+	await cmd(adb.capture)
+	await cmd(adb.pull+path.join(__dirname,'../')+'bench/screenshot_0.png')
+	median.getImg(PNG.sync.read(fs.readFileSync('bench/screenshot_0.png')))
+}
+
 let sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 module.exports = async _=> {
 	
 	while ( true )
 	{
-		console.log("okay")
+
 		await sleep(1000)
-		await cmd(adb.capture)
-		await cmd(adb.pull+path.join(__dirname,'../')+'bench/screenshot_0.png')
-		await getImg()
+		await capture()
 		if ( median.check("应用中心", (isClick, outxy) => !isClick || click(outxy) ) ) continue;
-		console.log('not find')
+		
 		
 		
 	}

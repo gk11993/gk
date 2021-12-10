@@ -131,6 +131,7 @@ void Message::postMessage(string url, short port, Json& json)
 	string str(revdata);
 	str = str.substr(tool.indexOf(str, "{"), str.rfind("}"));
 	json.parse(str);
+	closesocket(server);
 }
 
 void Message::live()

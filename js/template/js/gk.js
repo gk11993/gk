@@ -234,6 +234,11 @@ class Dom {
 			}
 		}
 	}
+	trigger() {
+		let e = document.createEvent("MouseEvents")
+    	e.initEvent("click", true, true)
+    	this.dom[0].dispatchEvent(e)
+	}
 }
 
 class Gk extends Dom {
@@ -526,7 +531,7 @@ class Webgl {
 				uniform float discardAlphaSize;
 				void main() {
 					color = isTexture == 1.0 ? texture2D(texture, v_texCoord ) * v_color : v_color;
-					if ( isSpirit == 1.0 ) color = texture2D(texture, gl_PointCoord) * v_color;;
+					if ( isSpirit == 1.0 ) color = texture2D(texture, gl_PointCoord) * v_color;
 					if ( color.a <= discardAlphaSize ) discard;
 					gl_FragColor = color;
 				}
@@ -872,8 +877,6 @@ class WabglInner {
 		this.gl = gl
 		this.cloakWebgl = cloak
 		this.fun = fun
-		this.textures = []
-		this.emptyTextureLoadDone = false
 		this.init()
 	}
 	init() {
@@ -923,10 +926,6 @@ class WabglInner {
 		gl.uniform4f(webgl.inner.position, webgl.width, webgl.height, webgl.width, 2)
 		gl.uniform1f(webgl.inner.discardAlphaSize, 0)
 		this.setPointSize(1)
-		let empty = gk.make(1, 1)
-		this.texture({}, false)
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, await empty.getImg())
-		this.emptyTextureLoadDone = true
 	}
 	buffer() {
 		let webgl = this.cloakWebgl.inner
@@ -942,7 +941,7 @@ class WabglInner {
 		gl.enableVertexAttribArray(webgl.texCoord)
 		gl.vertexAttribPointer(webgl.texCoord, 2, gl.FLOAT, false, 4 * 9, 4 * 7)
 	}
-	texture(obj, isDelete=true) {
+	texture(obj) {
 		let gl = this.gl
 		var texture = gl.createTexture()
 		gl.activeTexture(gl.TEXTURE0)	
@@ -955,7 +954,8 @@ class WabglInner {
 		let model = obj.repeat ?  gl.REPEAT : gl.CLAMP_TO_EDGE
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, obj.repeat && obj.s ? gl.MIRRORED_REPEAT : model)
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, obj.repeat && obj.t ? gl.MIRRORED_REPEAT : model)
-		if ( isDelete ) this.textures.push(texture)
+	
+		return texture
 	}
 	drawSource(loop) {
 		let webgl = this.cloakWebgl
@@ -985,8 +985,8 @@ class WabglInner {
 			webgl.period.prev = webgl.period.time - prevSum
 			prevSum = webgl.period.time
 
-			if ( !self.emptyTextureLoadDone ) await sleep() // because shader in 'if false' also run texture2D, for not see warning, so loading empty image the sleep 17ms, delete this that's okay
-			if ( loop ) fun && fun()
+			
+			if ( loop ) fun && fun(webgl.period)
 			
 			if ( webgl.inner.stack.triangles.length ) {
 				//TRIANGLE_FAN
@@ -1018,11 +1018,6 @@ class WabglInner {
 				gl.bufferData(gl.ARRAY_BUFFER,  new Float32Array(webgl.inner.stack.points), gl.STATIC_DRAW)
 				gl.drawArrays(gl.POINTS, 0, webgl.inner.stack.points.length/9)
 				webgl.inner.stack.points = []
-			}
-
-			if ( self.textures.length ) {
-				for (var i = 0; i < self.textures.length; i++) gl.deleteTexture(self.textures[i])
-				self.textures = []
 			}
 
 			if ( webgl.inner.saveName || webgl.inner.saveName == undefined ) {
@@ -1140,7 +1135,7 @@ class WabglInner {
 
 		if ( obj.size != undefined ) this.setPointSize(obj.size)
 		if ( obj.side ) gl.uniform1f(webgl.inner.discardAlphaSize, obj.side)
-		this.texture()
+		let Texture = this.texture()
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, obj.img)
 		
 		gl.uniform1f(webgl.inner.isSpirit, 1)
@@ -1150,6 +1145,9 @@ class WabglInner {
 
 		gl.uniform1f(webgl.inner.isSpirit, 0)
 		if ( obj.side ) gl.uniform1f(webgl.inner.discardAlphaSize, 0)
+		if ( obj.size != undefined ) this.setPointSize(1)
+
+		gl.deleteTexture(Texture)
 	}
 	drawTexture(obj) {
 		let webgl = this.cloakWebgl
@@ -1189,7 +1187,7 @@ class WabglInner {
 	}
 }
 
-let generateBody = (fn, already, index) => {
+let generateBody = async (fn, already, index) => {
 	let webgl = webgls[index]
 	webgl.width = window.innerWidth
 	webgl.height = window.innerHeight
@@ -1245,7 +1243,7 @@ let generateBody = (fn, already, index) => {
 
 	if ( !webgl.alignCenter ) webgl.inner.attr.translate = [-webgl.width/2, -webgl.height/2, 0, 0]
 
-	already(webgl.inner.webgl.drawSource())
+	await already(webgl.inner.webgl.drawSource())
 	if ( fun ) webgl.inner.webgl.drawSource(true)
 }
 
